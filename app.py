@@ -1,5 +1,3 @@
-# app.py
-
 from flask import Flask, render_template, request, jsonify
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -7,7 +5,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load the dataset
+# Load the dataset without removing any parts
 newsgroups = fetch_20newsgroups(subset='all', remove=())
 
 # Create a TF-IDF vectorizer and fit it to the dataset
@@ -22,24 +20,23 @@ def compute_svd(matrix, k):
     VT_k = VT[:k, :]
     return U_k, S_k, VT_k
 
-# Apply SVD to reduce dimensionality
-k = 100  # Number of components
+# SVD
+k = 100
 U_k, S_k, VT_k = compute_svd(X_tfidf, k)
 
 # Compute the reduced representation of the documents
 X_reduced = U_k @ S_k
 
-# Normalize the reduced vectors
+# Normalize vectors
 X_norm = X_reduced / np.linalg.norm(X_reduced, axis=1, keepdims=True)
 
-# --- Add this block to inspect the first 5 documents ---
+# Inspect the first 5 documents from the dataset
 print("Inspecting the first 5 documents from the dataset:")
 for i in range(5):
     doc_length = len(newsgroups.data[i])
     print(f"Document {i} length: {doc_length}")
     print(newsgroups.data[i])
     print("=" * 80)
-# -------------------------------------------------------
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -58,14 +55,15 @@ def index():
         # Prepare results
         results = []
         for idx, score in zip(top_indices, top_scores):
-            full_content = newsgroups.data[idx]  # Fetch full document content
-            content_length = len(full_content)
-            print(f"Top Document {idx} length: {content_length}")
-            # Optional: Print the content of the top documents
-            # print(full_content)
+            # Build the content similar to the initial code snippet
+            doc_length = len(newsgroups.data[idx])
+            content = f"Document {idx} length: {doc_length}\n"
+            content += newsgroups.data[idx]
+            content += "\n" + "=" * 80
+            # Append the result
             results.append({
                 'score': float(score),
-                'content': full_content  # Ensure the entire content is passed
+                'content': content  # Include the formatted content
             })
         # Return the results to the frontend
         return jsonify(results=results)
