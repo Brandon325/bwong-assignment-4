@@ -1,4 +1,5 @@
 # app.py
+
 from flask import Flask, render_template, request, jsonify
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -31,6 +32,15 @@ X_reduced = U_k @ S_k
 # Normalize the reduced vectors
 X_norm = X_reduced / np.linalg.norm(X_reduced, axis=1, keepdims=True)
 
+# --- Add this block to inspect the first 5 documents ---
+print("Inspecting the first 5 documents from the dataset:")
+for i in range(5):
+    doc_length = len(newsgroups.data[i])
+    print(f"Document {i} length: {doc_length}")
+    print(newsgroups.data[i])
+    print("=" * 80)
+# -------------------------------------------------------
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -49,7 +59,10 @@ def index():
         results = []
         for idx, score in zip(top_indices, top_scores):
             full_content = newsgroups.data[idx]  # Fetch full document content
-            print(f"Document {idx + 1} length: {len(full_content)}")  # Log length for verification
+            content_length = len(full_content)
+            print(f"Top Document {idx} length: {content_length}")
+            # Optional: Print the content of the top documents
+            # print(full_content)
             results.append({
                 'score': float(score),
                 'content': full_content  # Ensure the entire content is passed
@@ -59,4 +72,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    app.run(debug=True, port=3000)
