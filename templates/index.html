@@ -1,0 +1,21 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LSA Search Engine</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>LSA Search Engine</h1>
+    <form id="search-form">
+        <input type="text" id="query" name="query" placeholder="Enter your query here" required>
+        <button type="submit">Search</button>
+    </form>
+    <h2>Results:</h2>
+    <div id="results"></div>
+    <canvas id="chart" width="800" height="400"></canvas>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
