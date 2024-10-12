@@ -1,64 +1,25 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Python application
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-permissions:
-  contents: read
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    # Step to check out the repository
-    - uses: actions/checkout@v4
-
-    # Step to set up Python 3.12.2
-    - name: Set up Python 3.12.2
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set up Python 3.12.6
       uses: actions/setup-python@v3
       with:
-        python-version: "3.12.2"
-
-    # Step to install dependencies, including those in `requirements.txt`
-    - name: Install dependencies
+        python-version: "3.12.6"
+    - name: Install Dependencies
+      run: make install
+    - name: Run the Application
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest Flask scikit-learn nltk
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    # Step to download NLTK stopwords
-    - name: Download NLTK data
-      run: |
-        python -m nltk.downloader stopwords
-
-    # Step to lint Python code with flake8
-    - name: Lint with flake8
-      run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-    # Step to run pytest for tests
-    - name: Test with pytest
-      run: |
-        pytest
-
-    # Step to run the Flask app
-    - name: Run Flask App
-      run: |
-        python app.py > server.log 2>&1 &
+        make run &
         sleep 10
-
-    # Step to confirm that the Flask app is running
     - name: Confirm Server is Running
       run: |
         curl --fail http://localhost:3000 || exit 1
-
-
