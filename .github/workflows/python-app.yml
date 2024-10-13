@@ -29,10 +29,10 @@ jobs:
       run: |
         python -m nltk.downloader stopwords
 
-    # Step to run the application (Flask)
-    - name: Run the Application
+    # Step to run the application (Flask) directly instead of `make run`
+    - name: Run Flask App Directly
       run: |
-        make run > server.log 2>&1 &
+        python app.py > server.log 2>&1 &
         sleep 30
         cat server.log  # Output logs for debugging
 
